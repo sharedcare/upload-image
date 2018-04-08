@@ -46,8 +46,7 @@ exports.handler = (event, context, callback) => {
 
     response = constResponse(200, "Request succeed", signedParams);
 
-    // TODO implement
-    callback(null, 'Hello from Lambda');
+    callback(null, response);
 };
 
 function constResponse(statusCode, message, params) {

@@ -1,6 +1,6 @@
 var crypto = require('crypto');
 
-function s3Signature(params, config) {
+function signature(params, config) {
     return {
         endpoint_url: "https://" + config.bucket  + ".s3.amazonaws.com.",
         params: signParams(params, config)
@@ -9,7 +9,8 @@ function s3Signature(params, config) {
 
 function signParams(params, config) {
     var credential = amzCredential(config);
-    var b64policy = updatePolicy(params, config, credential);
+    var policy = updatePolicy(params, config, credential);
+    var b64policy = new Buffer(JSON.stringify(policy)).toString('base64');
     return {
         key: params.filename,
         acl: 'public-read',
@@ -60,4 +61,4 @@ function signPolicy(stringToSign, config) {
 
 }
 
-module.exports = { s3Signature: s3Signature};
+module.exports = { signature: signature};

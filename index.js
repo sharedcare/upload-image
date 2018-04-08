@@ -1,8 +1,10 @@
-var crypto = require('crypto');
-var path = require('path');
-var sign = require('./encrypt');
+'use strict';
 
-var dateISOString = new Date().toISOString();
+const uuid = require("uuid");
+const sign = require("./encrypt");
+
+
+const dateISOString = new Date().toISOString();
 
 const config = {
     accessKey: process.env.S3_ACCESS_KEY,
@@ -13,19 +15,49 @@ const config = {
     expectedMaxSize: 15000000,
     amzAlgorithm: "AWS4-HMAC-SHA256",
     successUrl: "http://success.com",
-    date: dateISOString
+    date: dateISOString,
+    clientAccessKey: process.env.CLIENT_ACCESS_KEY
 };
 
 exports.handler = (event, context, callback) => {
-    const url = event.body;
-    const params = {
-        filename: filename,
-        contentType: event.contentType
-    };
+    const params = event.queryStringParameters;
+    const requiredParams = ["Content-Type", "clientAccessKey", "fileExtension"];
+    var response;
 
-    sign.s3Signature(params, config);
+    if (!params) {
+        response = constResponse(400, 'Parameters are required', null);
+        callback(null, response);
+    } else {
+        for (var i in requiredParams) {
+            if (!params[requiredParams[i]]) {
+                response = constResponse(400, requiredParams[i] + " is required", null);
+                callback(null, response);
+            }
+        }
+    }
 
+    if (params.clientAccessKey !== config.clientAccessKey) {
+        response = constResponse(403, "Client access is denied due to wrong access key", null);
+        callback(null, response);
+    }
+
+    params["filename"] = uuid.v1() + params.fileExtension;
+    const signedParams =  sign.signature(params, config);
+
+    response = constResponse(200, "Request succeed", signedParams);
 
     // TODO implement
     callback(null, 'Hello from Lambda');
 };
+
+function constResponse(statusCode, message, params) {
+    const headers = { "Content-Type": "application/json" };
+    return {
+        statusCode: statusCode,
+        headers: headers,
+        body: JSON.stringify({
+            message: message,
+            params: params
+        })
+    };
+}

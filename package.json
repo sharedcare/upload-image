@@ -1,0 +1,14 @@
+{
+  "name": "upload-image",
+  "version": "1.0.0",
+  "description": "Server for upload image",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tony Chen",
+  "license": "ISC",
+  "dependencies": {
+    "package.json": "^2.0.1"
+  }
+}

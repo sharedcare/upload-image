@@ -1,4 +1,4 @@
-var crypto = require('crypto');
+var crypto = require("crypto");
 
 function signature(params, config) {
     return {
@@ -10,7 +10,7 @@ function signature(params, config) {
 function signParams(params, config) {
     var credential = amzCredential(config);
     var policy = updatePolicy(params, config, credential);
-    var b64policy = new Buffer(JSON.stringify(policy)).toString('base64');
+    var b64policy = new Buffer(JSON.stringify(policy, null, "\t")).toString("base64");
     return {
         key: params.filename,
         acl: 'public-read',
@@ -24,12 +24,12 @@ function signParams(params, config) {
 }
 
 function updatePolicy(params, config, credential) {
-    return { expiration: new Date((new Date).getTime() + (5 * 60 * 1000)).toISOString(),
-        "conditions": [
+    return {
+        expiration: new Date((new Date).getTime() + (5 * 60 * 1000)).toISOString(),
+        conditions: [
             { bucket: config.bucket },
             { key: params.filename },
             { acl: "public-read" },
-            {"success_action_redirect": config.successUrl},
             ["starts-with", "$Content-Type", "image/"],
             ["content-length-range", config.expectedMinSize, config.expectedMaxSize],
             {"x-amz-server-side-encryption": "AES256"},
@@ -39,11 +39,11 @@ function updatePolicy(params, config, credential) {
             {"x-amz-algorithm": config.amzAlgorithm},
             {"x-amz-date": config.date}
         ]
-    }
+    };
 }
 
 function amzCredential(config) {
-    var dateString = config.date.substr(0, 4) + config.date.substr(5, 2) + config.date.substr(8, 2);
+    var dateString = config.date.split("T")[0];
     return [config.accessKey, dateString, config.region, 's3/aws4_request'].join('/')
 }
 
@@ -52,7 +52,7 @@ function hmac(key, string) {
 }
 
 function signPolicy(stringToSign, config) {
-    var dateString =  config.date.substr(0, 4) + config.date.substr(5, 2) + config.date.substr(8, 2);
+    var dateString = config.date.split("T")[0];
     var dateKey = hmac("AWS4" + config.secretKey, dateString);
     var dateRegionKey = hmac(dateKey, config.region);
     var dateRegionServiceKey = hmac(dateRegionKey, "s3");

@@ -5,6 +5,7 @@ const sign = require("./encrypt");
 
 
 const dateISOString = new Date().toISOString();
+const amzDate = getAmzDate(dateISOString);
 
 const config = {
     accessKey: process.env.S3_ACCESS_KEY,
@@ -15,7 +16,7 @@ const config = {
     expectedMaxSize: 15000000,
     amzAlgorithm: "AWS4-HMAC-SHA256",
     successUrl: "http://success.com",
-    date: dateISOString,
+    date: amzDate,
     clientAccessKey: process.env.CLIENT_ACCESS_KEY
 };
 
@@ -60,3 +61,15 @@ function constResponse(statusCode, message, params) {
         })
     };
 }
+
+function getAmzDate(dateStr) {
+    var chars = [":","-"];
+    for (var i=0;i<chars.length;i++) {
+        while (dateStr.indexOf(chars[i]) != -1) {
+            dateStr = dateStr.replace(chars[i],"");
+        }
+    }
+    dateStr = dateStr.split(".")[0] + "Z";
+    return dateStr;
+}
+

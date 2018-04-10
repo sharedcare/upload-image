@@ -1,5 +1,5 @@
 /**
- *  @fileOverview Generates the signature for AWS s3 HTTP request
+ *  @file Generates the signature for AWS s3 HTTP request
  *
  *  @author       Yizhen Chen
  *
@@ -10,6 +10,7 @@ var crypto = require("crypto");
 
 /**
  * Generates all required elements for http request
+ * @generator
  * @param {object} params - query parameters
  * @param {object} config - global configuration
  * @return {object} - JSON object contains all required elements
@@ -35,6 +36,7 @@ function signature(params, config) {
 
 /**
  * Generates s3 policy
+ * @generator
  * @param {object} params - query parameters
  * @param {object} config - global configuration
  * @param {string} amzCredential
@@ -61,6 +63,7 @@ function updatePolicy(params, config, amzCredential) {
 
 /**
  * Generates amzCredential
+ * @generator
  * @param {object} config - global configuration
  * @return {string} - amzCredential
  */
@@ -83,6 +86,7 @@ function hmac(key, string) {
 
 /**
  * Generates signature based on AWS Signature Version 4
+ * @generator
  * @param {string} stringToSign - s3 policy in base64 encode
  * @param {object} config - global configuration
  * @returns {string} - signed signature

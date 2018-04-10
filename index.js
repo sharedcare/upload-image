@@ -1,5 +1,5 @@
 /**
- *  @fileOverview Main node.js handler for AWS lambda function
+ *  @file Main node.js handler for AWS lambda function
  *
  *  @author       Yizhen Chen
  *
@@ -13,17 +13,20 @@ const uuid = require("uuid");
 const sign = require("./encrypt");
 
 /**
+ * @constant
  * amzDate used in signing signature,
  * should be specified in the ISO8601 formatted string.
- * @example 20130728T000000Z
+ * For example, 20130728T000000Z.
  * @type {string}
  */
 const dateISOString = new Date().toISOString();
 const amzDate = getAmzDate(dateISOString);
 
 /**
+ * @constant
  * The global configuration
  * @type {{accessKey: *, secretKey: *, bucket: *, region: *, expectedMinSize: number, expectedMaxSize: number, amzAlgorithm: string, successUrl: string, date: *, clientAccessKey: *}}
+ * @default
  */
 const config = {
     accessKey: process.env.S3_ACCESS_KEY,   // Your AWS access key ID
